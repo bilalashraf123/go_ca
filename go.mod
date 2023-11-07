@@ -1,9 +1,8 @@
 module go-ca
 
-go 1.19
+go 1.21.1
 
 require (
-	github.com/BurntSushi/toml v1.3.2
 	github.com/digitorus/pkcs11 v0.0.0-20231024191023-5699806b6e8e
 	github.com/miekg/pkcs11 v1.1.1
 	github.com/spf13/cobra v1.7.0
