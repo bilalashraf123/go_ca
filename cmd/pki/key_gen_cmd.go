@@ -39,6 +39,11 @@ var KeyGenCmd = &cobra.Command{
 	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		err := validateKeyGenParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
 		switch keyAlgo.keySource {
 		case "software":
 			_, _, _, err := generateSoftwareKeyPair()
@@ -85,4 +90,40 @@ func init() {
 	subjectHardwareKey.addSubjectHardwareKeyParams(KeyGenCmd)
 	privKeyOutPath.addPrivKeyOutPathParam(KeyGenCmd)
 	pubKeyOutPath.addPubKeyOutPathParam(KeyGenCmd)
+}
+
+func validateKeyGenParams() error {
+	switch keyAlgo.keyAlgorithm {
+	case "RSA":
+		switch keyAlgo.keyLength {
+		case 2048, 3072, 4096:
+		default:
+			return fmt.Errorf("invalid key_length : %d", keyAlgo.keyLength)
+		}
+	case "ECDSA":
+		switch keyAlgo.curve {
+		case "secp256r1", "secp384r1", "secp521r1":
+		default:
+			return fmt.Errorf("invalid curve value: %s", keyAlgo.curve)
+		}
+	default:
+		return fmt.Errorf("invalid key_algo: %s", keyAlgo.keyAlgorithm)
+	}
+
+	switch keyAlgo.keySource {
+	case "software":
+	case "hardware":
+		if len(p11Module.pkcs11Module) == 0 {
+			return fmt.Errorf("pkcs11_module value must be provided when key_source is hardware")
+		} else if p11Module.slot == -1 {
+			return fmt.Errorf("pkcs11_slot value must be provided when key_source is hardware")
+		} else if len(p11Module.pin) == 0 {
+			return fmt.Errorf("pkcs11_pin value must be provided when key_source is hardware")
+		} else if len(subjectHardwareKey.keyID) == 0 {
+			return fmt.Errorf("key_id value must be provided when key_source is hardware")
+		}
+	default:
+		return fmt.Errorf("invalid key_source: %s. Must be either software or hardware", keyAlgo.keySource)
+	}
+	return nil
 }

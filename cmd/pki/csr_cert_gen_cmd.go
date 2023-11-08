@@ -51,6 +51,16 @@ var CSRCertGenCmd = &cobra.Command{
 
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		err := validateCertParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
+		err = validateCsrCetGenParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
 		csrPEM, err := os.ReadFile(csrInputPath.csrInputPath)
 		if err != nil {
 			fmt.Println(fmt.Errorf("unable to read issuer private key file: %w", err))
@@ -141,4 +151,27 @@ func init() {
 	issuerInfo.addIssuerInfoParams(CSRCertGenCmd)
 	csrInputPath.addCSRInputPathParam(CSRCertGenCmd)
 	certOutPath.addCertOutPathParam(CSRCertGenCmd)
+}
+
+func validateCsrCetGenParams() error {
+	if len(issuerInfo.issuerCertPath) == 0 {
+		return fmt.Errorf("issuer_cert_path must be provided")
+	}
+	if len(issuerInfo.issuerPvyKeyPath) == 0 && len(issuerInfo.issuerKeyID) == 0 {
+		return fmt.Errorf("either issuer_private_key_path (CA private key in software) or issuer_key_id " +
+			"(CA private key in hardware)")
+	}
+	if len(issuerInfo.issuerKeyID) != 0 {
+		if len(p11Module.pkcs11Module) == 0 {
+			return fmt.Errorf("pkcs11_module value must be provided when CA private key in hardware")
+		} else if p11Module.slot == -1 {
+			return fmt.Errorf("pkcs11_slot value must be provided when CA private key in hardware")
+		} else if len(p11Module.pin) == 0 {
+			return fmt.Errorf("pkcs11_pin value must be provided when CA private key in hardware")
+		}
+	}
+	if len(csrInputPath.csrInputPath) == 0 {
+		return fmt.Errorf("csr_input_path must be provided")
+	}
+	return nil
 }

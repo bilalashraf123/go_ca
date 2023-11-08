@@ -16,8 +16,8 @@ type certInfoParams struct {
 }
 
 func (params *certInfoParams) addCertInfoParams(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&params.duration, "duration", "", "Certication duration. Possible values are 1Y or 2MO or 3D "+
-		"or 6H or 4M or 5S.")
+	cmd.Flags().StringVar(&params.duration, "duration", "", "Certication duration. Example values are 1Y or 2MO or 3D "+
+		"or 6H or 4M or 5S")
 	cmd.MarkFlagRequired("duration")
 
 	cmd.Flags().StringVar(&params.cdpURL, "cdp_url", "", "CRL URL to add in the certificate")

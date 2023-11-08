@@ -18,6 +18,6 @@ func (params *issuerInfoParams) addIssuerInfoParams(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&params.issuerCertPath, "issuer_cert_path", "", "Path of the issuer certificate "+
 		"e.g. /home/bilal/issuer_cert.pem. Issuer certificate must be in PEM format")
 
-	cmd.Flags().StringVar(&params.issuerKeyID, "issuer_key_id", "", "CKAID of the issuer private key in hardware crypto device. Required only, "+
-		"if key_source is hardware.")
+	cmd.Flags().StringVar(&params.issuerKeyID, "issuer_key_id", "", "CKAID of the issuer private key in hardware crypto device. "+
+		"Required only, if key_source is hardware")
 }

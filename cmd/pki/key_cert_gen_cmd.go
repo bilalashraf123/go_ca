@@ -71,6 +71,21 @@ var KeyCertGenCmd = &cobra.Command{
 
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		err := validateKeyGenParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
+		err = validateCertParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
+		err = validIssuerInfoParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
 		var certPEM []byte
 		switch keyAlgo.keySource {
 		case "software":
@@ -167,4 +182,26 @@ func init() {
 	privKeyOutPath.addPrivKeyOutPathParam(KeyCertGenCmd)
 	pubKeyOutPath.addPubKeyOutPathParam(KeyCertGenCmd)
 	certOutPath.addCertOutPathParam(KeyCertGenCmd)
+}
+
+func validateCertParams() error {
+	if len(subjectInfo.commonName) == 0 {
+		return fmt.Errorf("atleast common_name value must be provided")
+	}
+	if len(certInfo.duration) == 0 {
+		return fmt.Errorf("certificate duration must be provided. Example values are 1Y or 2MO or 3D " +
+			"or 6H or 4M or 5S")
+	}
+	return nil
+}
+
+func validIssuerInfoParams() error {
+	if keyAlgo.keySource == "software" {
+		if len(issuerInfo.issuerPvyKeyPath) == 0 {
+			return fmt.Errorf("issuer_private_key_path must be provided when key_source is software")
+		}
+	} else if len(issuerInfo.issuerKeyID) == 0 {
+		return fmt.Errorf("issuer_key_id must be provided when key_source is hardware")
+	}
+	return nil
 }

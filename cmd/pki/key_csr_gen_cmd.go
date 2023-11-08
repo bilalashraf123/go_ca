@@ -39,6 +39,11 @@ var KeyGenCSRCmd = &cobra.Command{
  	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		err := validateKeyGenParams()
+		if err != nil {
+			fmt.Println(fmt.Errorf("%w", err))
+			return
+		}
 		SubjectInfo := &util.SubjectInfo{
 			CommonName: "goCA generated CSR",
 		}
