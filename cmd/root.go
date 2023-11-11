@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"go-ca/cmd/pki"
+	"go-ca/cmd/timestamp"
 
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,8 @@ func Execute() {
 	pkiCmd.AddCommand(pki.KeyCertGenCmd)
 	pkiCmd.AddCommand(pki.CSRCertGenCmd)
 	rootCmd.AddCommand(pkiCmd)
+
+	rootCmd.AddCommand(timestamp.TimestampCmd)
 
 	rootCmd.Execute()
 }
