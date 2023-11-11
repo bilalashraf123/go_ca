@@ -16,11 +16,11 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
-	pkiCmd.AddCommand(pki.KeyGenCmd)
-	pkiCmd.AddCommand(pki.KeyGenCSRCmd)
-	pkiCmd.AddCommand(pki.KeyCertGenCmd)
-	pkiCmd.AddCommand(pki.CSRCertGenCmd)
-	rootCmd.AddCommand(pkiCmd)
+	pki.PKICmd.AddCommand(pki.KeyGenCmd)
+	pki.PKICmd.AddCommand(pki.KeyGenCSRCmd)
+	pki.PKICmd.AddCommand(pki.KeyCertGenCmd)
+	pki.PKICmd.AddCommand(pki.CSRCertGenCmd)
+	rootCmd.AddCommand(pki.PKICmd)
 
 	rootCmd.AddCommand(timestamp.TimestampCmd)
 
